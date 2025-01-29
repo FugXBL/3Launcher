@@ -1,6 +1,6 @@
 @echo off
 :: 3Launcher (Preset Creation & Loading Tool)
-:: Version: 2.0
+:: Version: 2.1
 :: Author: Ndt
 
 :: Check if preset is passed in
@@ -377,9 +377,35 @@ if not exist "%source_path%" (
 if not exist "%BO3_RootFolder%" (
     goto error_nofolder
 )
-xcopy "%source_path%\*" "%destination_folder%\" /Y
-echo Files copied successfully.
+:: Attempt to copy files and handle errors
+echo Copying files...
+xcopy "%source_path%\*" "%destination_folder%\" /Y >nul 2>error.log
 
+:: Check for errors
+findstr /I /C:"sharing violation" error.log >nul
+if %errorlevel%==0 goto force_delete
+findstr /I /C:"access denied" error.log >nul
+if %errorlevel%==0 goto force_delete
+
+echo Files copied successfully.
+del error.log
+goto after_copy
+
+:force_delete
+echo Sharing violation or access denied detected. Forcing deletion of conflicting files...
+for %%F in ("%source_path%\*") do (
+    if exist "%destination_folder%\%%~nxF" (
+        echo Deleting "%destination_folder%\%%~nxF"...
+        del /F /Q "%destination_folder%\%%~nxF"
+    )
+)
+
+:: Retry copying after deletion
+xcopy "%source_path%\*" "%destination_folder%\" /Y
+echo Files copied successfully after forced deletion.
+del error.log
+
+:after_copy
 :: Brute force method for the MS Store version of BO3
 if "%nowifi%"=="true" if "%bo3version%"=="msstore" (
     echo Setting files to read-only...
