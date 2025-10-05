@@ -1,7 +1,7 @@
 @echo off
 :: 3Launcher (Preset Creation & Loading Tool)
 :: Version: 2.1
-:: Author: Ndt
+:: Author: Fug
 
 :: Check if preset is passed in
 color 09
@@ -62,7 +62,7 @@ if not defined BO3_RootFolder (
 cls
 color 03
 echo =========================================
-echo             Ndt's 3Launcher         
+echo             Fug's 3Launcher         
 echo =========================================
 echo [1] Start Script
 echo [2] Reconfigure Settings
@@ -486,3 +486,4 @@ echo.
 echo Preset configurations not found! Press any key to exit script...
 pause>nul
 exit /b
+
